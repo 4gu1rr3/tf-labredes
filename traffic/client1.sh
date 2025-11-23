@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Assign an IP address and mask to 'tun0' interface
-ifconfig tun0 mtu 1472 up 172.31.66.101 netmask 255.255.255.0
+ifconfig tun0 mtu 1400 up 172.31.66.101 netmask 255.255.255.0
 
 # Modify IP routing tables for new default gw
 route del default
