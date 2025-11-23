@@ -127,7 +127,7 @@ class NetworkMonitorApp:
         top_frame.pack(fill="x", padx=30, pady=25)
         
         # Ícone e Título
-        lbl_icon = tk.Label(top_frame, text="⚡", bg=DRACULA_BG, fg=DRACULA_YELLOW, font=("Segoe UI Emoji", 24))
+        lbl_icon = tk.Label(top_frame, text="🧛🏼‍♂️", bg=DRACULA_BG, fg=DRACULA_YELLOW, font=("Segoe UI Emoji", 24))
         lbl_icon.pack(side="left", padx=(0,10))
         
         title_cont = tk.Frame(top_frame, bg=DRACULA_BG)
@@ -206,7 +206,7 @@ class NetworkMonitorApp:
         self.tree.pack(fill="both", expand=True)
 
         # Botão Exit
-        btn_quit = tk.Button(self.root, text="TERMINATE MONITORING", bg=DRACULA_RED, fg=DRACULA_BG, 
+        btn_quit = tk.Button(self.root, text="STOP SNIFFING", bg=DRACULA_RED, fg=DRACULA_BG, 
                              font=("Consolas", 11, "bold"), command=self.on_close, 
                              relief="flat", activebackground=DRACULA_ORANGE, cursor="hand2")
         btn_quit.pack(pady=(0, 25), ipadx=30, ipady=5)
