@@ -18,35 +18,33 @@ FILE_INTERNET = "camada_internet.csv"
 FILE_TRANSPORTE = "camada_transporte.csv"
 FILE_APLICACAO = "camada_aplicacao.csv"
 
-# --- PALETA DE CORES (TEMA DRACULA) ---
-# Usada para dar um visual profissional e "hacker" para a ferramenta
-# Referência: Paleta oficial Dracula Theme
-DRACULA_BG       = "#282a36"  # Fundo principal (Escuro)
-DRACULA_CURRENT  = "#44475a"  # Linha atual/Seleção (Cinza azulado)
-DRACULA_FG       = "#f8f8f2"  # Texto principal (Branco gelo)
-DRACULA_COMMENT  = "#6272a4"  # Comentários/Cinza
+# --- PALETA DE CORES ---
+DRACULA_BG       = "#282a36"  # Fundo principal
+DRACULA_CURRENT  = "#44475a"  # Cinza azulado
+DRACULA_FG       = "#f8f8f2"  # Texto principal
+DRACULA_COMMENT  = "#6272a4"  # Cinza
 DRACULA_CYAN     = "#8be9fd"  # Ciano
 DRACULA_GREEN    = "#50fa7b"  # Verde
 DRACULA_ORANGE   = "#ffb86c"  # Laranja
 DRACULA_PINK     = "#ff79c6"  # Rosa
 DRACULA_PURPLE   = "#bd93f9"  # Roxo
-DRACULA_RED      = "#ff5555"  # Vermelho (Erros/Botões de parada)
+DRACULA_RED      = "#ff5555"  # Vermelho
 DRACULA_YELLOW   = "#f1fa8c"  # Amarelo
 
-# Configuração de Fontes para manter a legibilidade
+# Configuração de Fontes
 FONT_UI       = ("Segoe UI", 10)
 FONT_BOLD     = ("Segoe UI", 10, "bold")
-FONT_NUMBERS  = ("Consolas", 13, "bold") # Fonte monoespaçada para números
+FONT_NUMBERS  = ("Consolas", 13, "bold")
 FONT_HEADER   = ("Consolas", 18, "bold")
 
 class NetworkMonitorApp:
     """
     Classe principal da aplicação gráfica.
-    Gerencia a Interface (UI), a captura de pacotes (Sniffer) e os Logs.
+    Gerencia a interface, o sniffer e os logs.
     """
     def __init__(self, root):
         self.root = root
-        self.root.title(f"🧛 DRACULA MONITOR // {INTERFACE}")
+        self.root.title(f"NETWORK MONITOR // {INTERFACE}")
         self.root.geometry("980x720")
         self.root.configure(bg=DRACULA_BG)
         
@@ -65,10 +63,10 @@ class NetworkMonitorApp:
 
         # Inicialização dos subsistemas
         self.init_logs()     # Cria arquivos CSV se não existirem
-        self.setup_styles()  # Configura o tema visual (cores/fontes)
+        self.setup_styles()  # Configura o tema visual
         self.setup_ui()      # Desenha os elementos na tela
         
-        # Inicia a Thread do Sniffer (Paralelismo)
+        # Inicia a Thread do Sniffer
         # 'daemon=True' garante que a thread morra se o programa principal fechar
         self.sniff_thread = threading.Thread(target=self.start_sniffing, daemon=True)
         self.sniff_thread.start()
@@ -78,8 +76,7 @@ class NetworkMonitorApp:
 
     def init_logs(self):
         """
-        Verifica se os arquivos de log existem. Se não, cria-os com o cabeçalho correto.
-        Isso atende aos requisitos de colunas específicas do PDF.
+        Verifica se os arquivos de log existem. Se não, cria.
         """
         headers = {
             FILE_INTERNET: "Data_Hora,Protocolo,IP_Origem,IP_Destino,ID_Proto_Carga,Info_Extra,Tamanho_Total\n",
@@ -103,22 +100,21 @@ class NetworkMonitorApp:
 
     def setup_styles(self):
         """
-        Configura o estilo 'Dark Mode' usando o tema 'clam' do Tkinter como base
-        e sobrescrevendo as cores com a paleta Dracula.
+        Configura o estilo.
         """
-        style = ttk.Style()
-        style.theme_use('clam')
+        style = ttk.Style() # Cria o gerenciador de estilos
+        style.theme_use('clam') # Usa o tema 'clam' como base
         
         # Configuração global de cores de fundo e texto
         style.configure(".", background=DRACULA_BG, foreground=DRACULA_FG, font=FONT_UI)
         style.configure("TLabel", background=DRACULA_BG, foreground=DRACULA_FG)
         style.configure("TFrame", background=DRACULA_BG)
         
-        # Estilo dos "Cards" (Caixas de agrupamento de estatísticas)
+        # Estilo dos "Cards"
         style.configure("Card.TLabelframe", background=DRACULA_CURRENT, relief="flat", borderwidth=0)
         style.configure("Card.TLabelframe.Label", background=DRACULA_CURRENT, foreground=DRACULA_PURPLE, font=FONT_BOLD)
 
-        # Estilo da Tabela (Treeview) - Customização para fundo escuro
+        # Customização para fundo escuro
         style.configure("Treeview", 
                         background=DRACULA_BG, 
                         foreground=DRACULA_FG, 
@@ -147,7 +143,7 @@ class NetworkMonitorApp:
         top_frame.pack(fill="x", padx=30, pady=25)
         
         # Ícone e Título
-        lbl_icon = tk.Label(top_frame, text="🧛🏼‍♂️", bg=DRACULA_BG, fg=DRACULA_YELLOW, font=("Segoe UI Emoji", 24))
+        lbl_icon = tk.Label(top_frame, text="", bg=DRACULA_BG, fg=DRACULA_YELLOW, font=("Segoe UI Emoji", 24)) # Emoji quebrou
         lbl_icon.pack(side="left", padx=(0,10))
         
         title_cont = tk.Frame(top_frame, bg=DRACULA_BG)
@@ -236,9 +232,8 @@ class NetworkMonitorApp:
 
     def update_ui_loop(self):
         """
-        Loop da Thread Principal (GUI).
+        Loop da Thread Principal.
         Atualiza os valores na tela a cada 500ms lendo o dicionário self.stats.
-        Isso desacopla a captura (rápida) da visualização (lenta).
         """
         if not self.running: return
 
@@ -272,12 +267,12 @@ class NetworkMonitorApp:
         if selected and self.tree.exists(selected[0]):
             self.tree.selection_set(selected)
 
-        # Reagendar próxima execução em 500ms
+        # Reagenda próxima execução em 500ms
         self.root.after(500, self.update_ui_loop)
 
     def start_sniffing(self):
         """
-        Lógica da Thread Secundária (Sniffer).
+        Lógica do sniffer.
         Cria o Raw Socket e entra num loop infinito de leitura.
         """
         try:
@@ -288,8 +283,8 @@ class NetworkMonitorApp:
             # Bind na interface do túnel (tun0)
             s.bind((INTERFACE, 0))
         except:
-            # Se falhar (geralmente falta de sudo), avisa e fecha
-            self.root.after(0, lambda: messagebox.showerror("ROOT ERROR", "Please run with SUDO!"))
+            # Se falhar, avisa e fecha
+            self.root.after(0, lambda: messagebox.showerror("ROOT ERROR", ":("))
             self.root.destroy()
             return
 
@@ -309,7 +304,7 @@ class NetworkMonitorApp:
         pkt_len = len(raw_data)
         self.stats['total_pacotes'] += 1
 
-        if pkt_len < 20: return # Pacote inválido (muito pequeno)
+        if pkt_len < 20: return # Pacote inválido
         
         # --- CAMADA DE REDE (IP) ---
         # O primeiro byte contém Versão (4 bits) e Tamanho do Cabeçalho (4 bits)
@@ -317,7 +312,7 @@ class NetworkMonitorApp:
         ihl = raw_data[0] & 0xF
         iph_len = ihl * 4  # Tamanho em bytes (palavras de 32 bits * 4)
 
-        if version == 4:
+        if version == 4: # IPv4
             self.stats['IPv4'] += 1
             try:
                 # Desempacota cabeçalho IPv4 (20 bytes)
@@ -372,7 +367,7 @@ class NetworkMonitorApp:
                 if len(trans_data) > hlen_trans:
                     self.parse_app(trans_data[hlen_trans:], sport, dport, timestamp)
 
-        elif version == 6:
+        elif version == 6: # IPv6
             self.stats['IPv6'] += 1
             self.log_csv(FILE_INTERNET, [timestamp, "IPv6", "-", "-", "-", "-", pkt_len])
 
@@ -402,13 +397,13 @@ class NetworkMonitorApp:
             self.log_csv(FILE_APLICACAO, [ts, app, f'"{info}"'])
 
     def on_close(self):
-        """Encerra o programa de forma segura, parando threads."""
+        """Encerra o programa parando as threads."""
         self.running = False
         self.root.destroy()
         sys.exit(0)
 
 if __name__ == "__main__":
-    # Inicializa o Tkinter
+    # Inicializa o Tkinter - Interface Gráfica
     root = tk.Tk()
     app = NetworkMonitorApp(root)
     # Configura o evento de fechar janela (X) para chamar nossa função de limpeza

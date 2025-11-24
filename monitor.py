@@ -8,13 +8,13 @@ import threading
 from datetime import datetime
 
 # --- CONFIGURAÇÕES ---
-INTERFACE = "tun0" # Pode ser sobrescrito via argumento
+INTERFACE = "tun0"
 
 LOG_INTERNET = "camada_internet.csv"
 LOG_TRANSPORTE = "camada_transporte.csv"
 LOG_APLICACAO = "camada_aplicacao.csv"
 
-# Variável de controle para parar as threads suavemente
+# Variável de controle para parar as threads
 running = True
 
 # Contadores compartilhados
@@ -41,7 +41,7 @@ def inicializar_logs():
             except: pass
 
 def log_csv(arquivo, dados):
-    """Escreve no CSV (Thread Safe o suficiente para este uso)."""
+    """Escreve no CSV."""
     try:
         with open(arquivo, 'a', newline='') as f:
             csv.writer(f).writerow(dados)
@@ -54,7 +54,7 @@ def exibir_stats_loop():
     """
     global running
     while running:
-        # Código ANSI para limpar a tela e mover cursor para o topo (MUITO RÁPIDO)
+        # Código ANSI para limpar a tela e mover cursor para o topo
         print("\033[H\033[J", end="")
         
         print("="*50)
@@ -91,7 +91,7 @@ def parse_packet(packet_data):
         ihl = packet_data[0] & 0xF
         iph_len = ihl * 4
 
-        if version != 4:
+        if version != 4: # IPv6
             stats['ipv6'] += 1
             log_csv(LOG_INTERNET, [timestamp, "IPv6", "-", "-", "-", "-", packet_len])
             return
@@ -165,10 +165,9 @@ def parse_packet(packet_data):
         pass
 
 def start_sniffer_thread(interface):
-    """THREAD 1: Loop de Captura (Alta Prioridade)."""
+    """THREAD 1: Loop de Captura."""
     global running
     try:
-        # Aumentamos o buffer do socket para evitar drops (2MB)
         s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(0x0003))
         s.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 2 * 1024 * 1024)
         s.bind((interface, 0))
@@ -181,7 +180,7 @@ def start_sniffer_thread(interface):
         try:
             # Captura
             raw_data, _ = s.recvfrom(65535)
-            # Processa imediatamente
+            # Processa
             parse_packet(raw_data)
         except Exception:
             pass
@@ -199,12 +198,12 @@ def main():
     print(f"Iniciando sniffer na {target_interface}...")
     time.sleep(1)
 
-    # 1. Inicia a Thread de Captura (Background)
+    # 1. Inicia a Thread de Captura em background
     t_sniff = threading.Thread(target=start_sniffer_thread, args=(target_interface,))
     t_sniff.daemon = True # Morre se o programa principal morrer
     t_sniff.start()
 
-    # 2. Inicia o Loop de Visualização (Main Thread)
+    # 2. Inicia o Loop da Interface de Monitoramento
     try:
         exibir_stats_loop()
     except KeyboardInterrupt:
